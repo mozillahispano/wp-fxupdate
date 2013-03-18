@@ -28,28 +28,26 @@
 				<!-- Configurar las versiones actuales de Firefox -->
 				<div class="postbox">
 					<div title="Clic para cerrar" class="handlediv"><br /></div>
-					<h3 class="hndl"><span>Configurar las versiones actuales de Firefox</span></h3>
+					<h3 class="hndl"><span><?php _e('Settings the actual versions of Firefox:', 'actualiza-firefox'); ?></span></h3>
 					<div class="inside">
-						<p style="padding-left:10px;padding-right:10px; text-align: justify;">Aqu&iacute; usted podr&aacute; introducir las &uacute;ltimas versiones estables de Firefox, es muy importante que usted se mantenga al tanto pues Mozilla constantemete libera actualizaciones para su navegador. Si tienes dudas puedes consultar el <a target="blank_" href="https://wiki.mozilla.org/RapidRelease/Calendar">Calendario de liberaciones</a>, as&iacute; sabr&aacute;s la fecha de cada lanzamiento oficial.</p>
-						
 						<table class="form-table" style="margin-top: 0">
 							<tbody>
 								<tr valign='top'>
-									<th scope='row'>Versi&oacute;n estable de Firefox :</th>
+									<th scope='row'><?php _e('Stable version of Firefox:', 'actualiza-firefox'); ?></th>
 									<td><div style="overflow:auto;max-height:50px;">
 										<input type="text" id="af_firefox" name="af_firefox" onkeyup="preview();" />
 										<span id="af_firefox_yu" style="display:none;"><?php echo $af_firefox; ?></span>
 									</div></td>
 								</tr>
 								<tr valign='top'>
-									<th scope='row'>Versi&oacute;n estable de Firefox ESR :</th>
+									<th scope='row'><?php _e('Stable version of Firefox ESR:', 'actualiza-firefox'); ?></th>
 									<td><div style="overflow:auto;max-height:50px;">
 										<input type="text" id="af_firefox_esr" name="af_firefox_esr" onkeyup="preview();" />
 										<span id="af_firefox_esr_yu" style="display:none;"><?php echo $af_firefox_esr; ?></span>
 									</div></td>
 								</tr>
                                 <tr valign='top'>
-									<th scope='row'>URL para actualizar :</th>
+									<th scope='row'><?php _e('URL for update:', 'actualiza-firefox'); ?></th>
 									<td><div>
 										<input type="url" size="75" id="af_url" name="af_url" onkeyup="preview();" />
 										<span id="af_url_yu" style="display:none;"><?php echo $af_url; ?></span>
@@ -66,7 +64,7 @@
 		<input type="hidden" name="action" value="update" />
 		<input type="hidden" name="page_options" value="af_firefox, af_firefox_esr, af_url" />
 		<p class="submit">
-			<input type="submit" name="Submit" class="button-primary" value="<?php _e('Salvar cambios') ?>" />
+			<input type="submit" name="Submit" class="button-primary" value="<?php _e('Save changes', 'actualiza-firefox'); ?>" />
 		</p>
 	</form>
 	<script type="text/javascript">
@@ -84,7 +82,6 @@
 		document.getElementById('af_firefox_esr').value=document.getElementById('af_firefox_esr_yu').innerHTML;
         document.getElementById('af_url').value=document.getElementById('af_url_yu').innerHTML;
 		
-
 		//initiate preview
 		previzualizar();
 		//-->

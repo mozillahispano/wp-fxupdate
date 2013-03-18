@@ -1,0 +1,41 @@
+Content-Transfer-Encoding: 8bit
+
+#: actualiza-firefox-options.php:69
+#@ actualiza-firefox
+msgid "Save changes"
+msgstr ""
+
+#: actualiza-firefox-options.php:52
+#@ actualiza-firefox
+msgid "URL for update:"
+msgstr ""
+
+#: actualiza-firefox-options.php:45
+#@ actualiza-firefox
+msgid "Stable version of Firefox ESR:"
+msgstr ""
+
+#: actualiza-firefox-options.php:38
+#@ actualiza-firefox
+msgid "Stable version of Firefox:"
+msgstr ""
+
+#: actualiza-firefox-options.php:33
+#@ actualiza-firefox
+msgid "Test"
+msgstr ""
+
+#: actualiza-firefox-options.php:31
+#@ actualiza-firefox
+msgid "Settings the actual versions of Firefox:"
+msgstr ""
+
+#: actualiza-firefox.php:85
+#@ actualiza-firefox
+msgid "Settings"
+msgstr ""
+
+#: actualiza-firefox.php:189
+#@ actualiza-firefox
+msgid "Hide this message"
+msgstr ""

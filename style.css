@@ -1,27 +1,28 @@
+/* The fonts */
 @font-face{
 	font-family:'Open Sans Light';
-	src: url('fonts/OpenSans-Light-webfont.ttf') format('truetype');
+	src: url('font/OpenSans-Light-webfont.woff') format('woff');
 	font-weight:normal;
 	font-style:normal
 }
 
 @font-face{
 	font-family:'Open Sans';
-	src: url('fonts/OpenSans-Regular-webfont.ttf') format('truetype');
+	src: url('font/OpenSans-Regular-webfont.woff') format('woff');
 	font-weight:normal;
 	font-style:normal
 }
 
 @font-face{
 	font-family:'Open Sans';
-	src: url('fonts/OpenSans-Semibold-webfont.ttf') format('truetype');
+	src: url('font/OpenSans-Semibold-webfont.woff') format('woff');
 	font-weight:bold;
 	font-style:normal
 }
 
 @font-face{
 	font-family:'Open Sans';
-	src: url('/common/FONTS/OpenSans-Italic-webfont.ttf') format('truetype');
+	src: url('font/OpenSans-Italic-webfont.woff') format('woff');
 	font-weight:normal;
 	font-style:italic
 }
@@ -71,18 +72,21 @@
     float: right;
     text-align: center !important;
     font-style: italic;
+	font-family:'Open Sans',sans-serif !important;
 }
 
 .af_vinculo{
     color: rgb(255, 255, 255) !important;
     text-decoration: none;
     border-bottom: 1px dotted rgb(255, 255, 255);
+	font-family:'Open Sans',sans-serif !important;
 }
 
 .af_vinculo:hover{
     color:rgb(0, 113, 187) !important;
     text-decoration: none;
     border-bottom: 1px dotted rgb(255, 255, 255);
+	font-family:'Open Sans',sans-serif !important;
 }
 
 .af_creature{
@@ -98,11 +102,13 @@
 .af_mensaje_alerta{
     margin-left: 110px;
     font-size: 16px;
+	font-family:'Open Sans',sans-serif !important;
 }
 
 .af_descripcion{
     margin-left: 110px; 
     margin-top: 5px;
+	font-family:'Open Sans',sans-serif !important;
 }
 
 .button_actualiza_firefox,.button_actualiza_firefox:link,.button_actualiza_firefox:visited{

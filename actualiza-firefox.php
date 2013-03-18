@@ -2,14 +2,14 @@
 /*
 Plugin Name: Actualiza Firefox
 Plugin URI: https://github.com/mozillahispano/wp-fxupdate
-Description: Alerta a los usarios que est&aacute;n utilizando una versi&oacute;n obsoleta de Firefox y m&aacute;s.
-Version: 0.3
+Description: Alerta a los usarios que est&aacute;n utilizando una versi&oacute;n desactualizada de Firefox y m&aacute;s.
+Version: 0.4
 Author: Yunier Sosa V&aacute;zquez
 Author URI: http://firefoxmania.uci.cu
 Contributor: Erick León Bolinaga, Roberto Nuñez
 */
 
-/* Copyright 2012-2012  Yunier Sosa Vázquez  (email: yjsosa@estudiantes.uci.cu)
+/* Copyright 2012-2013  Yunier Sosa Vázquez (email: yjsosa@estudiantes.uci.cu)
 	
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -24,11 +24,15 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+For developed of the plugin has been used the libraries ChooseLocale and PropertiesParser of Pascal Chevrel, Mozilla <pascal@mozilla.com>, Mozilla
+ChooseLocale v0.6 (2012-12-09)
+PropertiesParser v0.1 (2012-12-05)
 */
 
 if(!isset($_COOKIE['actualiza_firefox'])){
     $_COOKIE['actualiza_firefox'];
-    setcookie('actualiza_firefox', 'on', time()+60*60*24*30, '/'); //Creando la cookie con 30 dias de duracion
+    setcookie('actualiza_firefox', 'on', time()+60*60*24*120, '/', $_SERVER['SERVER_NAME']); //Creando la cookie con 120 dias de duracion para el dominio donde esta instalado Actualiza Firefox
 }
 
 // Pre-2.6 compatibility
@@ -41,13 +45,73 @@ if(!defined('WP_PLUGIN_URL'))
 if(!defined('WP_PLUGIN_DIR'))
 	define('WP_PLUGIN_DIR', WP_CONTENT_DIR.'/plugins');
 
+add_action('activate_actualiza-firefox/actualiza-firefox.php', 'actualiza_firefox_install'); 
+add_action('wp_footer', 'actualiza_firefox'); //Incrustando la función en el pie de pagina del sitio
+add_action('plugins_loaded', 'actualiza_firefox_textdomain'); //Para la localizacion
+register_uninstall_hook(__FILE__, 'actualiza_firefox_clean_uninstall'); //Desintalacion limpia
+wp_register_style('af_style', WP_PLUGIN_URL . '/actualiza-firefox/style.css'); //Los estilos
+wp_enqueue_style('af_style'); //Los estilos
+
+function actualiza_firefox_install(){ //Activando el plugin por primera vez
+	$af_firefox=get_option('af_firefox'); //Obtener la opcion (si existe)
+	if(!$af_firefox){
+		update_option('af_firefox', '19.0');
+		update_option('af_firefox_esr', '17.0');
+		update_option('af_url', 'http://mozilla.org/firefox');
+	}	}
+		
+//Adicionando la página de configuracion al menu de WP
+add_action('admin_menu', 'adicionar_pagina_opcion'); 
+function adicionar_pagina_opcion(){
+	add_options_page('Actualiza Firefox', 'Actualiza Firefox', 'manage_options','actualiza-firefox/actualiza-firefox-options.php');
+}
+
+//Internacionalizacion para WP
+function actualiza_firefox_textdomain(){
+	load_plugin_textdomain('actualiza-firefox', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/');
+}
+
+//Localizacion para el idioma del usuario
+require_once ('lib/ChooseLocale.class.php');
+require_once ('lib/PropertiesParser.class.php');
+$af_locale=new tinyL10n\ChooseLocale(array('ar', 'es', 'en', 'el', 'ff', 'fr', 'ga', 'id', 'sq', 'pt', 'lij', 'zh-TW', 'ms', 'bn-IN', 'nl', 'bn-BD'));
+
+$af_locale->setDefaultLocale('en');
+$af_locale->mapLonglocales = true;
+
+// Bypass locale detection by $_SERVER
+$af_lang=$_SERVER['HTTP_ACCEPT_LANGUAGE'];
+$af_locale->setCompatibleLocale($lang);
+$af_lang=$af_locale->getDetectedLocale();
+
+$af_lang_file=tinyL10n\PropertiesParser::propertiesToArray(__DIR__ . '/lang/' . $af_lang . '.properties');
+
+//Borrando las opciones del plugin cuando se elimine desde la administracion de WP
+function actualiza_firefox_clean_uninstall(){
+	$option=get_option('af_firefox');
+	if($option){// Borrando todas las opciones del plugin
+		delete_option('af_firefox');
+		delete_option('af_firefox_esr');
+		delete_option('af_url');
+	}	}
+
+//Adicionando un vinculo hacia la configuracion del plugin
+$plugin=plugin_basename(__FILE__); 
+add_filter("plugin_action_links_$plugin", 'af_mi_vinculo_al_plugin'); 
+function af_mi_vinculo_al_plugin($link){ 
+	// Adicionando un vinculo hacia la configuracion del plugin
+	$af_con_link='<a href="options-general.php?page=actualiza-firefox/actualiza-firefox-options.php">'. __('Settings', 'actualiza-firefox').'</a>'; 
+	array_unshift($link, $af_con_link); 
+	return $link; 
+}
+
 //Plugin Options
 $af_firefox=get_option('af_firefox');
 $af_firefox_esr=get_option('af_firefox_esr');
 $af_url=get_option('af_url');
 
-//Detect webbrowser versions
-function detectar_version_firefox($title){
+//Obtener la version de Firefox del usuario
+function af_detectar_version_firefox($title){
 	global $useragent;
 	$start=$title;
 	//Grab the browser version if its present
@@ -56,8 +120,8 @@ function detectar_version_firefox($title){
 
 	return $version;   }
 
-//Detect webbrowsers
-function detectar_navegador(){
+//Detectar navegador web
+function af_detectar_navegador(){
 	global $useragent;
 	if(preg_match('/Firefox/i', $useragent))
 		$title="Firefox";
@@ -67,9 +131,9 @@ function detectar_navegador(){
 	return $title; }
 
 //Función para comparar las versiones de Firefox
-function comparar_versiones($ver){
+function af_comparar_versiones($ver){
 	global $af_firefox, $af_firefox_esr, $ver;
-	$obsoleta=false;  //Vamos a esperar qeu el usuario esté siempre actualizado
+	$obsoleta=false;  //Vamos a esperar que el usuario siempre esté actualizado
 	$af_estable=explode('.', $af_firefox); //Dividiendo el número de versión en arreglos para poder compararlos
 	$af_esr=explode('.', $af_firefox_esr);
 	$af_usuario=explode('.', $ver);
@@ -77,96 +141,66 @@ function comparar_versiones($ver){
 	no está usando una versión ESR entonces obsoleta=true */
     if ((((int)$af_estable[0])>((int)$af_usuario[0])) && (((int)$af_esr[0])!==((int)$af_usuario[0])))
 		$obsoleta=true;
-    //Comprobamos si es un Firefox Estable
+	/* Código obsoleto posterior a Firefox 16 pues ya no se envía la cadena Firefox 16.*.* sólo 16.0 (se necesita ayuda para obtener la versión real de Firefox)
+	//Comprobamos si es un Firefox Estable
 	elseif((((int)$af_estable[0])==((int)$af_usuario[0]))){
-	   /*Analizamos el tamaño de los arreglos para ver si es *.0 o *.0.*  */
+	   //Analizamos el tamaño de los arreglos para ver si es *.0 o *.0.*  
 	   if((count($af_usuario))==(count($af_estable))){ 
 	      if (((int)$af_estable[2])>((int)$af_usuario[2]))
 	         $obsoleta=true;
         }    }
 	//Si arriba no se termina entonces es un Firefox ESR
 	elseif ((((int)$af_esr[0])==((int)$af_usuario[0]))){
-	   /*Analizamos el tamaño de los arreglos para ver si es *.0 o *.0.* */
+	   //Analizamos el tamaño de los arreglos para ver si es *.0 o *.0.* 
 	   if((count($af_usuario))==(count($af_esr))){ 
 	       if (((int)$af_esr[2])>((int)$af_usuario[2]))
 	           $obsoleta=true;
-	   }   }
+	   }   } */
 	
 	return $obsoleta;  }
 
-//Funcion principal para mostrar los mensajes de alerta para actualizar
+//Funcion para mostrar los mensajes de actualizacion
 function actualiza_firefox(){
-    global $useragent, $af_firefox, $af_firefox_esr, $af_url, $ver;
+    global $useragent, $af_firefox, $af_firefox_esr, $af_url, $ver, $af_lang_file;
     if(isset($_COOKIE['actualiza_firefox'])){
-        if ($_COOKIE['actualiza_firefox']=='on'){
+        if($_COOKIE['actualiza_firefox']=='on'){
 			$useragent=$_SERVER['HTTP_USER_AGENT'];
-            $webbrowser=detectar_navegador();
-        	$inicio='<div class="af_actualiza_firefox">';
-            $alertaFirefoxDesactualizado='<div class="af_creature">
-                <span class="af_mensaje_alerta">Hey! Tu Firefox no est&aacute; actualizado.</span>
-                    <div class="af_descripcion">Esto puede ocasionar que tu navegador no funcione 
-                    correctamente o presente fallas de seguridad. Te recomendamos que lo actualices lo
-                    m&aacute;s r&aacute;pido posible.</div></div>';
-            $alertaNoFirefox='<div class="af_creature">
-                <span class="af_mensaje_alerta">Hey! Prueba el &uacute;nico navegador que te pone de primero.</span>
-                    <div class="af_descripcion">Firefox est&aacute; dise&ntilde;ado por Mozilla, una 
-                    comunidad global que antepone sus principios a las ganancias.</div></div>';
-            $descargarFirefox="<div class=\"af_actualizar\">
-                <a class=\"button_actualiza_firefox\" target=\"_blank\" href='$af_url'>Actual&iacute;zalo ahora &raquo;</a></br>
-                o <a class=\"af_vinculo\" target=\"_blank\" href='http://firefoxmania.uci.cu/10-razones-para-actualizarse-a-las-versiones-mas-recientes-de-firefox/'>aprende m&aacute;s</a> acerca de ello.</div>";
-            $descargarOtro="<div class=\"af_actualizar\">
-                <a class=\"button_actualiza_firefox\" target=\"_blank\" href='$af_url'>Descarga Firefox &raquo;</a></br>
-                o <a class=\"af_vinculo\" target=\"_blank\" href='http://firefoxmania.uci.cu/10-razones-para-actualizarse-a-las-versiones-mas-recientes-de-firefox/'>aprende m&aacute;s</a> acerca de &eacute;l.</div>";
+            $webbrowser=af_detectar_navegador();
+			$inicio='<div class="af_actualiza_firefox">';
             $jquery="<script type=\"text/javascript\">
             jQuery(document).ready(function($){
-                $('#btnCerrar').click(function(){
-                    $('.af_actualiza_firefox').slideUp();
-                    $('body').css({\"margin-top\":\"0 !important\"});
-                    writeCookie('actualiza_firefox', 'off', '720', '/');
-                });
+                $('#btnCerrarFirefox').click(function(){
+					$('.af_actualiza_firefox').slideUp();
+					$('body').css({\"margin-top\":\"0 !important\"});
+					writeCookie('actualiza_firefox', 'off', '1440', '/', document.domain);
+                    });
+				$('#btnCerrarOtro').click(function(){
+					$('.af_actualiza_firefox').slideUp();
+					$('body').css({\"margin-top\":\"0 !important\"});
+					writeCookie('actualiza_firefox', 'off', '2880', '/', document.domain);
+				});
 			});
-        	function writeCookie(name, value, hours, path){
+        	function writeCookie(name, value, hours, path, domain){
         	    var expire ='';
 				if(hours != null){
-        	        expire = new Date((new Date()).getTime() + hours * 3600000);
-        	        expire = \"; expires=\" + expire.toGMTString();
-        	    }
-				if (path){
+					expire = new Date((new Date()).getTime() + hours * 3600000);
+					expire = \"; expires=\" + expire.toGMTString();
+				}
+				if(path){
 					path=\"; path=\"+path;
 				}else path=\"\";
+				if(domain){
+					domain=\"; domain=\"+domain;
+				}else domain=\"\";
 				
-        	    document.cookie = name + \"=\" + escape(value) + expire + path;
+				document.cookie = name + \"=\" + escape(value) + expire + path + domain;
         	}
             </script>";
-			$cerrar="<a class=\"af_cerrar\" title='Ocultar este mensaje' id=\"btnCerrar\">X</a>";
-        	$ver=detectar_version_firefox($webbrowser);
-            $text='';
-            if (strpos($useragent,"Firefox")){
-                if (comparar_versiones($ver))
-                    $text=$inicio.$cerrar.$descargarFirefox.$alertaFirefoxDesactualizado.'</div>';
-            }else
-                $text=$inicio.$cerrar.$descargarOtro.$alertaNoFirefox.'</div>';
-            echo $jquery.$text;
+		  	if(strpos($useragent,"Firefox")){
+				$ver=af_detectar_version_firefox($webbrowser);
+                if(af_comparar_versiones($ver))
+					echo $jquery.$inicio.$af_lang_file['closeFirefox'].$af_lang_file['downloadFirefox1'].$af_url.$af_lang_file['downloadFirefox2'].$af_lang_file['alertFirefoxNoUpdated'];
+			}else
+				echo $jquery.$inicio.$af_lang_file['closeOther'].$af_lang_file['downloadOther1'].$af_url.$af_lang_file['downloadOther2'].$af_lang_file['alertNoFirefox'];
         }   }  }
-
-//El estilo que usaremos para el plugin 
-wp_register_style('af_style', WP_PLUGIN_URL . '/actualiza-firefox/style.css');
-wp_enqueue_style('af_style');
-
-add_action('admin_menu', 'adicionar_pagina_opcion'); //Adicionando la página de configuracion al menu de WP
-
-function adicionar_pagina_opcion(){
-	add_options_page('Actualiza Firefox', 'Actualiza Firefox', 'manage_options','actualiza-firefox/actualiza-firefox-options.php');
-}
-
-add_action('wp_footer', 'actualiza_firefox'); //Incrustando la función en el pie de pagina del sitio
-
-//Adicionando un vinculo hacia la configuracion del plugin
-$plugin=plugin_basename(__FILE__); 
-add_filter("plugin_action_links_$plugin", 'mi_vinculo_al_plugin' ); 
-function mi_vinculo_al_plugin( $link ) { 
-	// Adicionando un vinculo hacia la configuracion del plugin
-	$con_link='<a href="options-general.php?page=actualiza-firefox/actualiza-firefox-options.php">Configurar</a>'; 
-	array_unshift( $link, $con_link ); 
-	return $link; 
-}  ?>
+?>
