@@ -1,4 +1,4 @@
-<!--Begin: Options file for Actualiza Firefox-->
+﻿<!--Begin: Options file for Actualiza Firefox-->
 <div class="wrap">
 	<div id="icon-options-general" class="icon32"><br /></div>
 	<h2>Actualiza Firefox</h2>
