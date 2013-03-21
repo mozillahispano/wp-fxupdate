@@ -6,7 +6,7 @@ msgstr ""
 "Last-Translator: Besnik Bleta <besnik@programeshqip.org>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=iso-8859-1\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #@ actualiza-firefox
@@ -17,17 +17,17 @@ msgstr "Ruaji ndryshimet"
 #@ actualiza-firefox
 #: actualiza-firefox-options.php:52
 msgid "URL for update:"
-msgstr "URL përditësimi:"
+msgstr "URL pÃ«rditÃ«simi:"
 
 #@ actualiza-firefox
 #: actualiza-firefox-options.php:45
 msgid "Stable version of Firefox ESR:"
-msgstr "Version stabël i Firefox ESR:"
+msgstr "Version stabÃ«l i Firefox ESR:"
 
 #@ actualiza-firefox
 #: actualiza-firefox-options.php:38
 msgid "Stable version of Firefox:"
-msgstr "Version stabël i Firefox:"
+msgstr "Version stabÃ«l i Firefox:"
 
 #@ actualiza-firefox
 #: actualiza-firefox-options.php:33
@@ -37,7 +37,7 @@ msgstr "Test"
 #@ actualiza-firefox
 #: actualiza-firefox-options.php:31
 msgid "Settings the actual versions of Firefox:"
-msgstr "Rregullime të versionit aktual të Firefox-it:"
+msgstr "Rregullime tÃ« versionit aktual tÃ« Firefox-it:"
 
 #@ actualiza-firefox
 #: actualiza-firefox.php:85
@@ -47,5 +47,5 @@ msgstr "Rregullime"
 #@ actualiza-firefox
 #: actualiza-firefox.php:189
 msgid "Hide this message"
-msgstr "Fshihe këtë mesazh"
+msgstr "Fshihe kÃ«tÃ« mesazh"
 
