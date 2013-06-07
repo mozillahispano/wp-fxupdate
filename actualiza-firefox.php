@@ -1,12 +1,11 @@
-﻿<?php
+<?php
 /*
 Plugin Name: Actualiza Firefox
 Plugin URI: https://github.com/mozillahispano/wp-fxupdate
 Description: Alerta a los usuarios que están utilizando una versión desactualizada de Firefox y más.
-Version: 0.4
+Version: 0.5.1
 Author: Yunier J. Sosa Vázquez
 Author URI: http://firefoxmania.uci.cu
-Contributor: Erick León Bolinaga, Roberto Nuñez
 */
 
 /* Copyright 2012-2013  Yunier Sosa Vázquez (email: yjsosa@estudiantes.uci.cu)
@@ -30,22 +29,21 @@ ChooseLocale v0.6 (2012-12-09)
 PropertiesParser v0.1 (2012-12-05)
 */
 
-if(!isset($_COOKIE['actualiza_firefox'])){
-    $_COOKIE['actualiza_firefox'];
-    setcookie('actualiza_firefox', 'on', time()+60*60*24*120, '/', $_SERVER['SERVER_NAME']); //Creando la cookie con 120 días de duracion para el dominio donde está instalado Actualiza Firefox
-}
-
+require_once('lib/ChooseLocale.class.php');
+require_once('lib/PropertiesParser.class.php');
 add_action('activate_actualiza-firefox/actualiza-firefox.php', 'actualiza_firefox_install'); //Instalación
-add_action('wp_footer', 'actualiza_firefox'); //Incrustando la función en el pie de página del sitio
 add_action('plugins_loaded', 'actualiza_firefox_textdomain'); //Para la localizacion
 register_uninstall_hook(__FILE__, 'actualiza_firefox_clean_uninstall'); //Desintalación limpia
 wp_register_style('af_style', plugins_url('style.css',__FILE__)); //Los estilos
 wp_enqueue_style('af_style'); //Los estilos
+wp_register_script('af_script', plugins_url('actualiza-firefox-script.js',__FILE__)); //El script
+wp_enqueue_script('af_script'); //El script
+add_action('wp_footer', 'actualiza_firefox'); //Incrustando la función en el pie de página del sitio
 
 function actualiza_firefox_install(){ //Activando el plugin por primera vez
 	$af_firefox=get_option('af_firefox'); //Obtener la opción (si existe)
 	if(!$af_firefox){ //Creo las opciones del plugin
-		update_option('af_firefox', '19.0');
+		update_option('af_firefox', '21.0');
 		update_option('af_firefox_esr', '17.0');
 		update_option('af_url', 'http://mozilla.org/firefox');
 	}	}
@@ -62,19 +60,19 @@ function actualiza_firefox_textdomain(){
 }
 
 //Localización para el idioma del usuario
-require_once('lib/ChooseLocale.class.php');
-require_once('lib/PropertiesParser.class.php');
-$af_locale=new tinyL10n\ChooseLocale(array('ar', 'es', 'en', 'el', 'ff', 'fr', 'ga', 'id', 'sq', 'pt', 'lij', 'zh-TW', 'ms', 'bn-IN', 'nl', 'bn-BD'));
+function actualiza_firefox_idiomaUsuario(){
+	$af_locale=new tinyL10n\ChooseLocale(array('ar', 'es', 'en', 'el', 'ff', 'fr', 'ga', 'id', 'sq', 'pt', 'lij', 'zh-TW', 'ms', 'bn-IN', 'nl', 'bn-BD'));
+    $af_locale->setDefaultLocale('en');
+    $af_locale->mapLonglocales = true;
+    //Bypass locale detection by $_SERVER
+    $af_lang=$_SERVER['HTTP_ACCEPT_LANGUAGE'];
+    $af_locale->setCompatibleLocale($lang);
+    $af_lang=$af_locale->getDetectedLocale();
 
-$af_locale->setDefaultLocale('en');
-$af_locale->mapLonglocales = true;
-
-//Bypass locale detection by $_SERVER
-$af_lang=$_SERVER['HTTP_ACCEPT_LANGUAGE'];
-$af_locale->setCompatibleLocale($lang);
-$af_lang=$af_locale->getDetectedLocale();
-
-$af_lang_file=tinyL10n\PropertiesParser::propertiesToArray(__DIR__ . '/lang/' . $af_lang . '.properties');
+    $af_lang_file=tinyL10n\PropertiesParser::propertiesToArray(__DIR__ . '/lang/' . $af_lang . '.properties');
+	
+	return $af_lang_file;
+}
 
 //Eliminando las opciones del plugin cuando se elimine desde la administración de WP
 function actualiza_firefox_clean_uninstall(){
@@ -146,49 +144,28 @@ function af_comparar_versiones($ver){
 	   }   } */
 	
 	return $obsoleta;  }
-
+	
 //Función para mostrar los mensajes de Actualización
 function actualiza_firefox(){
-    global $useragent, $af_firefox, $af_firefox_esr, $af_url, $ver, $af_lang_file;
-    if(isset($_COOKIE['actualiza_firefox'])){
-        if($_COOKIE['actualiza_firefox']=='on'){
-			$useragent=$_SERVER['HTTP_USER_AGENT'];
-            $webbrowser=af_detectar_navegador();
-			$inicio='<div class="af_actualiza_firefox">';
-            $jquery="<script type=\"text/javascript\">
-            jQuery(document).ready(function($){
-                $('#btnCerrarFirefox').click(function(){
-					$('.af_actualiza_firefox').slideUp();
-					$('body').css({\"margin-top\":\"0 !important\"});
-					writeCookie('actualiza_firefox', 'off', '1440', '/', document.domain);
-                    });
-				$('#btnCerrarOtro').click(function(){
-					$('.af_actualiza_firefox').slideUp();
-					$('body').css({\"margin-top\":\"0 !important\"});
-					writeCookie('actualiza_firefox', 'off', '2880', '/', document.domain);
-				});
+   global $useragent, $af_firefox, $af_firefox_esr, $af_url, $ver;
+	$useragent=$_SERVER['HTTP_USER_AGENT'];
+	$webbrowser=af_detectar_navegador();
+	$inicio='<div id="af_actualiza_firefox">';
+	$af_lang_file=actualiza_firefox_idiomaUsuario();
+	$jquery="<script type=\"text/javascript\">
+        jQuery(document).ready(function($){
+		$('#cerrarMensaje').click(function(){
+			$('#af_actualiza_firefox').slideUp();
+			$('body').css({\"margin-top\":\"0 !important\"});
+			apagarActualiza();
 			});
-        	function writeCookie(name, value, hours, path, domain){
-        	    var expire ='';
-				if(hours != null){
-					expire = new Date((new Date()).getTime() + hours * 3600000);
-					expire = \"; expires=\" + expire.toGMTString();
-				}
-				if(path){
-					path=\"; path=\"+path;
-				}else path=\"\";
-				if(domain){
-					domain=\"; domain=\"+domain;
-				}else domain=\"\";
-				
-				document.cookie = name + \"=\" + escape(value) + expire + path + domain;
-        	}
-            </script>";
-		  	if(strpos($useragent,"Firefox")){
-				$ver=af_detectar_version_firefox($webbrowser);
-                if(af_comparar_versiones($ver))
-					echo $jquery.$inicio.$af_lang_file['closeFirefox'].$af_lang_file['downloadFirefox1'].$af_url.$af_lang_file['downloadFirefox2'].$af_lang_file['alertFirefoxNoUpdated'];
-			}else
-				echo $jquery.$inicio.$af_lang_file['closeOther'].$af_lang_file['downloadOther1'].$af_url.$af_lang_file['downloadOther2'].$af_lang_file['alertNoFirefox'];
-        }   }  }
+	   });</script>";
+	if(strpos($useragent,"Firefox")){
+		$ver=af_detectar_version_firefox($webbrowser);
+		if(af_comparar_versiones($ver))
+			echo $jquery.$inicio.$af_lang_file['closeFirefox'].$af_lang_file['downloadFirefox1'].$af_url.$af_lang_file['downloadFirefox2'].$af_lang_file['alertFirefoxNoUpdated'];
+		
+	}else
+		echo $jquery.$inicio.$af_lang_file['closeOther'].$af_lang_file['downloadOther1'].$af_url.$af_lang_file['downloadOther2'].$af_lang_file['alertNoFirefox'];
+}
 ?>

@@ -1,53 +1,44 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Actualiza Firefox 0.4\n"
+"Project-Id-Version: Actualiza Firefox\n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: \n"
-"Last-Translator: Yunier Sosa Vazquez <yjsosa@estudiantes.uci.cu>\n"
+"Last-Translator: Yunier Sosa Vázquez <yjsosa@estudiantes.uci.cu>\n"
 "Language-Team: Yunier <yjsosa@estudiantes.uci.cu>\n"
-"Language: es_ES\n"
+"Language: Español\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.5.4\n"
-"X-Poedit-KeywordsList: _e; __\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e\n"
 
 # @ actualiza-firefox
-#: actualiza-firefox-options.php:69
+#: actualiza-firefox-options.php:67
 msgid "Save changes"
 msgstr "Salvar cambios"
 
 # @ actualiza-firefox
-#: actualiza-firefox-options.php:52
+#: actualiza-firefox-options.php:50
 msgid "URL for update:"
 msgstr "URL para actualizar:"
 
 # @ actualiza-firefox
-#: actualiza-firefox-options.php:45
+#: actualiza-firefox-options.php:43
 msgid "Stable version of Firefox ESR:"
-msgstr "Versión estable de Firefox ESR:"
+msgstr "Última versión estable de Firefox ESR:"
 
 # @ actualiza-firefox
-#: actualiza-firefox-options.php:38
+#: actualiza-firefox-options.php:36
 msgid "Stable version of Firefox:"
-msgstr "Versión estable de Firefox:"
-
-# @ actualiza-firefox
-#: actualiza-firefox-options.php:33
-msgid "Test"
-msgstr "Prueba"
+msgstr "Última versión estable de Firefox:"
 
 # @ actualiza-firefox
 #: actualiza-firefox-options.php:31
 msgid "Settings the actual versions of Firefox:"
-msgstr "Configurar las versiones actuales de Firefox:"
+msgstr "Configurar las actuales versiones de Firefox:"
 
 # @ actualiza-firefox
-#: actualiza-firefox.php:85
+#: actualiza-firefox.php:94
 msgid "Settings"
 msgstr "Configurar"
-
-# @ actualiza-firefox
-#: actualiza-firefox.php:189
-msgid "Hide this message"
-msgstr "Ocultar este mensaje"
