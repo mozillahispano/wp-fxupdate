@@ -3,7 +3,7 @@
 Plugin Name: Actualiza Firefox
 Plugin URI: https://github.com/mozillahispano/wp-fxupdate
 Description: Alerta a los usuarios que están utilizando una versión desactualizada de Firefox y más.
-Version: 0.5.1
+Version: 0.5
 Author: Yunier J. Sosa Vázquez
 Author URI: http://firefoxmania.uci.cu
 */
