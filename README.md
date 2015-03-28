@@ -1,5 +1,5 @@
-## Wordpress Firefox Update
+## Actualiza Firefox para WordPress 0.5
 
-This plugin will warn you if your Firefox installation is outdated.
+Alert to users that are using an out of date version of Firefox and more.
 
-Intructions are on readme.txt
+Intructions are on [readme.txt file] (https://github.com/yuniers/wp-fxupdate/blob/master/readme.txt)

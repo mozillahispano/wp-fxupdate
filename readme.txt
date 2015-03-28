@@ -66,9 +66,6 @@ Its below under Screenshots folder/Se encuentran en la carpeta Screenshots
 
 == Changelog ==
 
-= 0.5.1 =
-*Support Do Not Track preference for moderns browsers.
-
 = 0.5 =
 * Bye cookies, welcome localStorage. From now the HTML5 localStorage is used for decide if show or not the meseagge alerting.
 
@@ -94,11 +91,8 @@ Its below under Screenshots folder/Se encuentran en la carpeta Screenshots
 
 == Cambios entre versiones ==
 
-= 0.5.1 =
-* Soporte para la preferencia Do Not Track en los navegadores modernos.
-
 = 0.5 =
-* Adios cookies, bienvenido localStorage, desde ahora se utilizará localStorage de HTML5 para decidir si mostrar o no el mensaje.
+* Adiós cookies, bienvenido localStorage. Desde ahora el localStorage de HTML5 será usado para decidir si mostrar o no la alerta.
 
 = 0.4 =
 * Soporte L10n internacionalización para WP y el idioma del usuario.

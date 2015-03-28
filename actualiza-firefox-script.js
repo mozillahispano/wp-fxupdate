@@ -8,8 +8,7 @@ function apagarActualiza(){
 }
 
 window.onload = function(){
-    var dnt=navigator.doNotTrack;
-    if(localStorage["actualiza-firefox"]=="on" && dnt!='yes'){
+    if(localStorage["actualiza-firefox"]=="on"){
         var alerta = document.getElementById("af_actualiza_firefox");
         alerta.setAttribute('style','visibility: visible !important;');
     }
